@@ -6,15 +6,16 @@
 #    By: antoinebuet <antoinebuet@student.42.fr>    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2026/01/16 21:53:05 by antoinebuet       #+#    #+#              #
-#    Updated: 2026/02/24 14:07:26 by antoinebuet      ###   ########.fr        #
+#    Updated: 2026/03/16 17:07:40 by antoinebuet      ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 NAME    = fdf
 CFLAGS  = -Wall -Wextra -Werror -g
 CC      = cc
-ARGS ?= 
-
+ARGS ?= test_maps/plat.fdf
+LIBFT_DIR	= ./libft
+LIBFT		= $(LIBFT_DIR)/libft.a
 ################################################################################
 ## OS DETECTION
 
@@ -34,29 +35,30 @@ endif
 ## SOURCES
 
 HEADER		= fdf.h
-INCLUDES	= -I$(MLX_PATH) -I.
+INCLUDES	= -I$(MLX_PATH) -I. -I$(LIBFT_DIR)
 
-SRC_FILES	= main.c \
+SRC_FILES	= main.c parse.c linked_list.c\
 
 OBJ_FILES	= $(SRC_FILES:.c=.o)
 
 ################################################################################
 ## RULES
-
-all: mlx $(NAME)
+$(LIBFT):
+	@make -C $(LIBFT_DIR)
+all: libft mlx $(NAME)
 
 ## Compilation de la mlx selon l'OS
 mlx:
 ifeq ($(UNAME), Darwin)
 	@echo "Compiling MinilibX for macOS..."
-	@make -C $(MLX_PATH)
+	@make -C $(MLX_PATH) 2>/dev/null
 else
 	@echo "Compiling MinilibX for Linux..."
-	@make -C $(MLX_PATH)
+	@make -C $(MLX_PATH) 2>/dev/null
 endif
 
-$(NAME): $(OBJ_FILES)
-	@$(CC) $(CFLAGS) $(OBJ_FILES) $(MLX_FLAGS) -o $(NAME)
+$(NAME): $(OBJ_FILES) $(LIBFT)
+	@$(CC) $(CFLAGS) $(OBJ_FILES) -L$(LIBFT_DIR) -lft $(MLX_FLAGS) -o $(NAME)
 	@echo "✓ $(NAME) compiled successfully"
 
 %.o: %.c $(HEADER)
@@ -65,11 +67,13 @@ $(NAME): $(OBJ_FILES)
 clean:
 	@rm -f $(OBJ_FILES)
 	@echo "✓ Objects cleaned"
+	@make -C $(LIBFT_DIR) clean 2>/dev/null || true
 
 fclean: clean
 	@rm -f $(NAME)
 	@make -C $(MLX_PATH) clean 2>/dev/null || true
 	@echo "✓ $(NAME) cleaned"
+	@make -C $(LIBFT_DIR) fclean 2>/dev/null || true
 
 re: fclean all
 
@@ -77,4 +81,4 @@ launch: all
 	@./$(NAME) $(ARGS)
 	@make fclean
 
-.PHONY: all clean fclean launch re mlx
+.PHONY: all clean fclean launch re mlx libft
