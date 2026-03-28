@@ -6,7 +6,7 @@
 /*   By: antoinebuet <antoinebuet@student.42.fr>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/24 13:42:31 by antoinebuet       #+#    #+#             */
-/*   Updated: 2026/03/24 13:18:45 by antoinebuet      ###   ########.fr       */
+/*   Updated: 2026/03/28 21:04:23 by antoinebuet      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -149,10 +149,10 @@ int main(int argc, char **argv)
 	map = parse_map(argv[1]);
 	if (!map)
 		return (0);
-	while (i < 10)
+	while (i < 3)
 	{
 		j = 0;
-		while (j < 10)
+		while (j < 3)
 		{
 			printf(" | %d, ", map[i][j][0]);
 			printf("%x", map[i][j][1]);

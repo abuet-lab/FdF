@@ -6,7 +6,7 @@
 /*   By: antoinebuet <antoinebuet@student.42.fr>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/09 16:10:21 by antoinebuet       #+#    #+#             */
-/*   Updated: 2026/03/28 16:16:28 by antoinebuet      ###   ########.fr       */
+/*   Updated: 2026/03/28 21:12:49 by antoinebuet      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -157,34 +157,76 @@ int **seconde_split(char **first_split)
 			return (free_final_tab(final_tab, first_split), NULL) ; // final_tab*
 		final_tab[i][0] = ft_atoi(seconde_split[0]);
 		if (final_tab[i][0] > 2147483647 || final_tab[i][0] < -2147483648)
-			return (free_final_tab(final_tab, first_split), free_tab22(seconde_split), NULL); // free seconde split, final_tab*
+			return (free_final_tab(final_tab, first_split),
+				free_tab22(seconde_split), NULL); // free seconde split, final_tab*
 		final_tab[i][1] = make_color(seconde_split);
 		if (final_tab[i][1] == -1)
-			return (free_final_tab(final_tab, first_split), free_tab22(seconde_split), NULL); //free seconde split, final_tab*
+			return (free_final_tab(final_tab, first_split),
+				free_tab22(seconde_split), NULL); //free seconde split, final_tab*
 		i++;
 		free_tab22(seconde_split); //seconde split*
 	}
 	return (final_tab);
 }
+int verif_line(char **first_split, t_firstsplit *t)
+{
+	int i;
+
+	i = 0;
+	if (t->line == -1)
+	{
+		while(first_split[i])
+			i++;
+		t->line = i;
+		return (i);
+	}
+	while (first_split[i])
+		i++;
+	if (i != t->line)
+		return (0);
+	return (1);
+}
+void free_tab33(int ***final_tab, t_firstsplit *t)
+{
+	int j;
+	int k;
+
+	j = 0;
+	while (j < (t->i))
+	{
+		k = 0;
+		while (k < t->line)
+		{
+			free(final_tab[j][k]);
+			k++;
+		}
+		free(final_tab[j]);
+		j++;
+	}
+	free(final_tab);
+}
 int ***first_split(t_node *list, int size)
 {
 	char **first_split;
 	int ***final_tab;
-	int i;
+	t_firstsplit t;
 
-	i = 0;
+	t.i = 0;
+	t.line = -1;
 	final_tab = malloc((size + 1) * sizeof(int **));
 	while (list != NULL)
 	{
 		first_split = ft_split(list->value, ' ');
 		if (!first_split)
 			return (free(final_tab), NULL); //final_tab*
-		delete_first(&list);
-		final_tab[i] = seconde_split(first_split);
-		if (!final_tab[i])
+		if (verif_line(first_split, &t) == 0) //marche pas
+			return (free_tab33(final_tab, &t), free_tab22(first_split), NULL);
+		final_tab[t.i] = seconde_split(first_split);
+		if (!final_tab[t.i])
 			return (free(final_tab), free_tab22(first_split), NULL); //final_tab premier tableau first_split*
-		i++;
+		t.i++;
 		free_tab22(first_split);
+		list = list->next;
 	}
 	return (final_tab);
 }
@@ -210,6 +252,8 @@ int ***open_files(int fd)
 		line = get_next_line(fd);
 	}
 	size = lenght_list(list);
+	if (size < 2)
+		return (free_list(&list), NULL); //free list chainé*
 	tab_parse = first_split(list, size);
 	if (!tab_parse)
 		return (free_list(&list), NULL); //free list chainé*

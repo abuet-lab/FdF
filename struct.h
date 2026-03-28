@@ -18,5 +18,10 @@ typedef struct s_node
 	struct s_node *next;
 }	t_node;
 
+typedef struct s_fisrtsplit
+{
+	int i;
+	int line;
+}	t_firstsplit;
 
 #endif
