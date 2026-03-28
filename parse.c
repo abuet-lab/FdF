@@ -6,7 +6,7 @@
 /*   By: antoinebuet <antoinebuet@student.42.fr>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/09 16:10:21 by antoinebuet       #+#    #+#             */
-/*   Updated: 2026/03/23 15:46:37 by antoinebuet      ###   ########.fr       */
+/*   Updated: 2026/03/28 16:16:28 by antoinebuet      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,13 +66,25 @@ int put_hex(char *hexa)
 			temp = put_int(hexa[i]);
 			if (temp == -1)
 				return (-1);
-			number += temp * (power(16, t));
+			number += temp * (pow(16, t));
 			t++;
 			i--;
 		}
 		return (number);
 	}
 	return (-1);
+}
+void free_mft(int **final_tab, int i)
+{
+	int j;
+
+	j = 0;
+	while (j < i)
+	{
+		free(final_tab[j]);
+		j++;
+	}
+	free(final_tab);
 }
 int **malloc_final_tab(char **first_split)
 {
@@ -82,27 +94,45 @@ int **malloc_final_tab(char **first_split)
 
 	i = 0;
 	number_line = count_number(first_split);
-	final_tab = malloc(number_line * sizeof(int));
+	final_tab = malloc(number_line * sizeof(int *));
 	if (!final_tab)
 		return (0); 
 	while (i < number_line)
 	{
-		final_tab[i] = malloc(2 * sizeof(char));
-		if (!final_tab)
-			return ; //free final_tab
+		final_tab[i] = malloc(2 * sizeof(int));
+		if (!final_tab[i])
+			return (free_mft(final_tab, i), NULL); //free final_tab
+		i++;
  	}
 	return (final_tab);
+}
+
+void free_final_tab(int **final_tab, char **first_split)
+{
+	int number_line;
+	int i;
+
+	number_line = count_number(first_split);
+	i = 0;
+	while(i < number_line)
+	{
+		free(final_tab[i]);
+		i++;
+	}
+	free(final_tab);
 }
 int make_color(char **seconde_split)
 {
 	if (!seconde_split[1])
-		return (put_hex('0xFFFFFF'));
+		return (put_hex("0xFFFFFF"));
 	return (put_hex(seconde_split[1]));
 }
 
 static void	free_tab22(char **array)
 {
 	int i;
+
+	i = 0;
 	while (array[i])
 	{
 		free(array[i]);
@@ -119,18 +149,18 @@ int **seconde_split(char **first_split)
 	i = 0;
 	final_tab = malloc_final_tab(first_split);
 	if (!final_tab)
-		return (free_array22(first_split), 0); //faut free first_split*
+		return (NULL);
 	while (first_split[i])
 	{
-		seconde_split = split(first_split[i], ',');
+		seconde_split = ft_split(first_split[i], ',');
 		if (!seconde_split)
-			return (free_tab22(first_split), 0) ; // firstsplit*
+			return (free_final_tab(final_tab, first_split), NULL) ; // final_tab*
 		final_tab[i][0] = ft_atoi(seconde_split[0]);
-		if (final_tab[i][0] == 2147483648)
-			return (free_tab22(first_split), free_tab22(seconde_split), 0); // free seconde split, fist_split*
+		if (final_tab[i][0] > 2147483647 || final_tab[i][0] < -2147483648)
+			return (free_final_tab(final_tab, first_split), free_tab22(seconde_split), NULL); // free seconde split, final_tab*
 		final_tab[i][1] = make_color(seconde_split);
 		if (final_tab[i][1] == -1)
-			return (free_tab22(first_split), free_tab22(seconde_split), 0); //free seconde split, first_split,*
+			return (free_final_tab(final_tab, first_split), free_tab22(seconde_split), NULL); //free seconde split, final_tab*
 		i++;
 		free_tab22(seconde_split); //seconde split*
 	}
@@ -143,20 +173,25 @@ int ***first_split(t_node *list, int size)
 	int i;
 
 	i = 0;
-	final_tab = malloc((size + 1) * sizeof(int));
+	final_tab = malloc((size + 1) * sizeof(int **));
 	while (list != NULL)
 	{
-		first_split = split(list->value, ' ');
+		first_split = ft_split(list->value, ' ');
 		if (!first_split)
-			return (0); //final_tab
+			return (free(final_tab), NULL); //final_tab*
 		delete_first(&list);
 		final_tab[i] = seconde_split(first_split);
-		if (!final_tab)
-			return (free_tab22(first_split), 0); //final_tab, first_split
+		if (!final_tab[i])
+			return (free(final_tab), free_tab22(first_split), NULL); //final_tab premier tableau first_split*
 		i++;
 		free_tab22(first_split);
 	}
 	return (final_tab);
+}
+void free_list(t_node **list)
+{
+	while (*list)
+		delete_first(list);
 }
 
 int ***open_files(int fd)
@@ -164,20 +199,20 @@ int ***open_files(int fd)
 	t_node *list;
 	int size;
 	char *line;
-	char ***tab_parse;
+	int ***tab_parse;
 
 	list = NULL;
 	line = get_next_line(fd);
 	while (line != NULL)
 	{
-		line = get_next_line(fd);
-		add_back(&list, line);
+		add_back(&list, ft_strtrim(line, "\n"));
 		free(line);
+		line = get_next_line(fd);
 	}
 	size = lenght_list(list);
 	tab_parse = first_split(list, size);
 	if (!tab_parse)
-		return ; //free list chainé
+		return (free_list(&list), NULL); //free list chainé*
 	return (tab_parse);
 }
 

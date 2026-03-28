@@ -6,71 +6,71 @@
 /*   By: antoinebuet <antoinebuet@student.42.fr>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/24 13:42:31 by antoinebuet       #+#    #+#             */
-/*   Updated: 2026/03/23 10:50:08 by antoinebuet      ###   ########.fr       */
+/*   Updated: 2026/03/24 13:18:45 by antoinebuet      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "fdf.h"
 #include "struct.h"
 
-static void	put_pixel_bgra(t_mlx *mlx, int x, int y, 
-							unsigned int color_bgra)
-{
-	*(unsigned int *)(mlx->data + y * mlx->line_len + x * 4) = color_bgra;
-}
+// static void	put_pixel_bgra(t_mlx *mlx, int x, int y, unsigned int color_bgra)
+// {
+// 	*(unsigned int *)(mlx->data + y * mlx->line_len + x * 4) = color_bgra;
+// }
 
-void draw_line(t_mlx *mlx, int x1, int y1, int x2, int y2, unsigned int color_bgra)
-{
-	float delta_x;
-	float coef_dir;
-	int x;
+// void draw_line(t_mlx *mlx, int x1, int y1, int x2, int y2, unsigned int color_bgra)
+// {
+// 	float delta_x;
+// 	float coef_dir;
+// 	int x;
 
-	delta_x = x2 - x1;
-	coef_dir = (float)(y2 - y1) / delta_x;
-	x = x1;
-	if (delta_x == 0)
-	{
-		if (y1 > y2)
-		{
-			x = y1;
-			y1 = y2;
-			y1 = x;
-		}
-		while(y1 <= y2)
-		{
-			put_pixel_bgra(mlx, x1, y1, color_bgra);
-			y1++;
-		}
-	}	
-	else if (delta_x > 0)
-	{
-		while (x <= x2)
-		{
-			put_pixel_bgra(mlx, x,(int)(y1 + (x - x1) * coef_dir), color_bgra);
-			x++;
-		}
-	}
-	else if (delta_x < 0)
-	{
-		while (x >= x2)
-		{
-			put_pixel_bgra(mlx, x,(int)(y1 + (x - x1) * coef_dir), color_bgra);
-			x--;
-		}
-	}
-}
+// 	delta_x = x2 - x1;
+// 	coef_dir = (float)(y2 - y1) / delta_x;
+// 	x = x1;
+// 	if (delta_x == 0)
+// 	{
+// 		if (y1 > y2)
+// 		{
+// 			x = y1;
+// 			y1 = y2;
+// 			y1 = x;
+// 		}
+// 		while(y1 <= y2)
+// 		{
+// 			put_pixel_bgra(mlx, x1, y1, color_bgra);
+// 			y1++;
+// 		}
+// 	}	
+// 	else if (delta_x > 0)
+// 	{
+// 		while (x <= x2)
+// 		{
+// 			put_pixel_bgra(mlx, x,(int)(y1 + (x - x1) * coef_dir), color_bgra);
+// 			x++;
+// 		}
+// 	}
+// 	else if (delta_x < 0)
+// 	{
+// 		while (x >= x2)
+// 		{
+// 			put_pixel_bgra(mlx, x,(int)(y1 + (x - x1) * coef_dir), color_bgra);
+// 			x--;
+// 		}
+// 	}
+// }
 
-static int *translate_iso(int x, int y, int z)
-{
-	int *iso;
+// static int *translate_iso(int x, int y, int z)
+// {
+// 	int *iso;
 
-	iso = malloc(2 * sizeof(int));
-	if (!iso)
-		return (0);
-	iso[0] = (x - y) * cos(30 * M_PI / 180.0); //x iso
-	iso[1] = (x + y) * sin(30 * M_PI / 180.0) - z; //y iso
-	return (iso);
-}
+// 	iso = malloc(2 * sizeof(int));
+// 	if (!iso)
+// 		return (0);
+// 	iso[0] = (x - y) * cos(30 * M_PI / 180.0); //x iso
+// 	iso[1] = (x + y) * sin(30 * M_PI / 180.0) - z; //y iso
+// 	return (iso);
+// }
+
 // void init_grille(t_mlx *mlx, int size_carre, int color, int number_x, int number_y)
 // {
 // 	int *iso;
@@ -141,13 +141,26 @@ int main(int argc, char **argv)
 {
 	//t_mlx	mlx;
 	//int size_carre = 20;
-	int **map;
-
+	int ***map;
+	int i = 0;
+	int j;
 	if (argc != 2)
 		return (0);
 	map = parse_map(argv[1]);
 	if (!map)
 		return (0);
+	while (i < 10)
+	{
+		j = 0;
+		while (j < 10)
+		{
+			printf(" | %d, ", map[i][j][0]);
+			printf("%x", map[i][j][1]);
+			j++;
+		}
+		printf("\n");
+		i++;
+	}
 	// mlx.mlx = mlx_init();
 	// mlx.win = mlx_new_window(mlx.mlx, 800, 600, "Test");
 	// mlx.img = mlx_new_image(mlx.mlx, 800, 600);
