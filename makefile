@@ -6,14 +6,14 @@
 #    By: antoinebuet <antoinebuet@student.42.fr>    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2026/01/16 21:53:05 by antoinebuet       #+#    #+#              #
-#    Updated: 2026/03/28 16:19:00 by antoinebuet      ###   ########.fr        #
+#    Updated: 2026/04/08 12:56:25 by antoinebuet      ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 NAME    = fdf
 CFLAGS  = -Wall -Wextra -Werror -g
 CC      = cc
-ARGS ?= test.fdf
+ARGS ?= test_maps/elem.fdf
 LIBFT_DIR	= ./libft
 LIBFT		= $(LIBFT_DIR)/libft.a
 ################################################################################
@@ -30,11 +30,10 @@ else
 	MLX_PATH = ./minilibx-linux
 	MLX_FLAGS = -L$(MLX_PATH) -lmlx -lXext -lX11 -lm
 endif
-
 ################################################################################
 ## SOURCES
 
-HEADER		= fdf.h
+HEADER		= fdf.h linked_list.h struct.h
 INCLUDES	= -I$(MLX_PATH) -I. -I$(LIBFT_DIR)
 
 SRC_FILES	= main.c parse.c linked_list.c\
@@ -43,9 +42,10 @@ OBJ_FILES	= $(SRC_FILES:.c=.o)
 
 ################################################################################
 ## RULES
+all: libft mlx $(NAME)
+
 $(LIBFT):
 	@make -C $(LIBFT_DIR)
-all: libft mlx $(NAME)
 
 ## Compilation de la mlx selon l'OS
 mlx:

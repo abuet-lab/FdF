@@ -19,6 +19,9 @@
 #  include "./minilibx-linux/mlx.h"
 # endif
 
-int ***parse_map(char *file_name);
+# define WITH	1000
+# define HEIGHT	1000
+
+long int ***parse_map(char *file_name, t_sizetab *sizetab);
 
 #endif
