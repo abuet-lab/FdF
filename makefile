@@ -3,17 +3,17 @@
 #                                                         :::      ::::::::    #
 #    makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: antoinebuet <antoinebuet@student.42.fr>    +#+  +:+       +#+         #
+#    By: abuet <abuet@student.42.fr>                +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2026/01/16 21:53:05 by antoinebuet       #+#    #+#              #
-#    Updated: 2026/04/08 22:40:34 by antoinebuet      ###   ########.fr        #
+#    Updated: 2026/04/09 14:26:39 by abuet            ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 NAME    = fdf
 CFLAGS  = -Wall -Wextra -Werror -g
 CC      = cc
-ARGS ?= test_maps/test.fdf
+ARGS ?= test_maps/42.fdf
 LIBFT_DIR	= ./libft
 LIBFT		= $(LIBFT_DIR)/libft.a
 ################################################################################
@@ -36,7 +36,7 @@ endif
 HEADER		= fdf.h linked_list.h struct.h
 INCLUDES	= -I$(MLX_PATH) -I. -I$(LIBFT_DIR)
 
-SRC_FILES	= main.c parse.c linked_list.c\
+SRC_FILES	= main.c parse.c linked_list.c min_max.c utils.c free_parse.c manage_window.c utils_draw.c\
 
 OBJ_FILES	= $(SRC_FILES:.c=.o)
 

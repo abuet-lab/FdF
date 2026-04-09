@@ -3,24 +3,17 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: antoinebuet <antoinebuet@student.42.fr>    +#+  +:+       +#+        */
+/*   By: abuet <abuet@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/24 13:42:31 by antoinebuet       #+#    #+#             */
-/*   Updated: 2026/04/09 11:25:05 by antoinebuet      ###   ########.fr       */
+/*   Updated: 2026/04/09 14:31:56 by abuet            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "fdf.h"
 #include "struct.h"
 
-static void	put_pixel_bgra(t_mlx *mlx, int x, int y, unsigned int color_bgra)
-{
-	if (x < 0 || (x >= WITH) || y < 0 || y >= HEIGHT)
-		return ;
-	*(unsigned int *)(mlx->data + y * mlx->line_len + x * 4) = color_bgra;
-}
-
-void	draw_line(t_mlx *mlx, t_draw *l)
+static void	draw_line(t_mlx *mlx, t_draw *l)
 {
 	t_drawline	t;	
 
@@ -49,53 +42,7 @@ void	draw_line(t_mlx *mlx, t_draw *l)
 	}
 }
 
-static t_point	translate_iso(t_point t, t_sizetab *a)
-{
-	t_point	point;
-
-	point.x = (t.y - t.x) * cos(a->angle * M_PI / 180.0)
-		+ (((a->colone + a->line) * a->size_square * 0.866) / 2) + a->x;
-	point.y = (t.y + t.x) * sin(a->angle * M_PI / 180.0) - t.z + 200;
-	point.color = t.color;
-	return (point);
-}
-
-t_point	dynamic_size(int x, int y, long ***map, t_sizetab *sizetab)
-{
-	t_point	point;
-
-	point.color = map[x][y][1];
-	if (sizetab->size_square == 0)
-	{
-		if (sizetab->line > sizetab->colone)
-			sizetab->size_square = WITH / (sizetab->line * 2);
-		else
-			sizetab->size_square = HEIGHT / (sizetab->colone * 2);
-		if (sizetab->size_square == 0)
-			sizetab->size_square = 1;
-	}
-	point.x = x * sizetab->size_square;
-	point.y = y * sizetab->size_square;
-	if (sizetab->max_z == sizetab->min_z)
-		point.z = 0;
-	else
-		point.z = map[x][y][0] * (150 / (sizetab->max_z - sizetab->min_z));
-	return (point);
-}
-
-t_draw	fill_draw(t_point *s1, t_point *s2)
-{
-	t_draw	draw;
-
-	draw.x1 = s1->x;
-	draw.y1 = s1->y;
-	draw.x2 = s2->x;
-	draw.y2 = s2->y;
-	draw.color = s1->color;
-	return (draw);
-}
-
-void	draw_square(t_mlx *mlx, t_square *s)
+static void	draw_square(t_mlx *mlx, t_square *s)
 {
 	t_draw	draw;
 
@@ -136,69 +83,7 @@ void	draw_landscape(t_mlx *mlx, long ***map, t_sizetab *sizetab)
 	}
 }
 
-int	handle_close(void *param)
-{
-	t_data	*d;
-	int		i;
-
-	d = (t_data *)param;
-	i = 0;
-	mlx_destroy_image(d->mlx.mlx, d->mlx.img);
-	mlx_destroy_window(d->mlx.mlx, d->mlx.win);
-	while (i < d->sizetab.line)
-	{
-		free(d->map[i][0]);
-		free(d->map[i]);
-		i++;
-	}
-	free(d->map);
-	exit(0);
-}
-
-void	zoom(int keycode, t_data *data)
-{
-	if (keycode == KEY_UP)
-		data->sizetab.size_square += 1;
-	if (keycode == KEY_DOWN)
-		data->sizetab.size_square -= 1;
-	mlx_destroy_image(data->mlx.mlx, data->mlx.img);
-	data->mlx.img = mlx_new_image(data->mlx.mlx, WITH, HEIGHT);
-	data->mlx.data = mlx_get_data_addr(data->mlx.img, &data->mlx.bpp,
-			&data->mlx.line_len, &data->mlx.endian);
-	draw_landscape(&data->mlx, data->map, &data->sizetab);
-	mlx_put_image_to_window(data->mlx.mlx, data->mlx.win, data->mlx.img, 0, 0);
-}
-
-void	translate(int keycode, t_data *data)
-{
-	mlx_clear_window(data->mlx.mlx, data->mlx.win);
-	if (keycode == KEY_RIGHT)
-		data->sizetab.x += 5;
-	else
-		data->sizetab.x -= 5;
-	mlx_destroy_image(data->mlx.mlx, data->mlx.img);
-	data->mlx.img = mlx_new_image(data->mlx.mlx, WITH, HEIGHT);
-	data->mlx.data = mlx_get_data_addr(data->mlx.img, &data->mlx.bpp,
-			&data->mlx.line_len, &data->mlx.endian);
-	draw_landscape(&data->mlx, data->map, &data->sizetab);
-	mlx_put_image_to_window(data->mlx.mlx, data->mlx.win, data->mlx.img, 0, 0);
-}
-
-void	rotate(int keycode, t_data *data)
-{
-	if (keycode == KEY_W)
-		data->sizetab.angle += 1;
-	else
-		data->sizetab.angle -= 1;
-	mlx_destroy_image(data->mlx.mlx, data->mlx.img);
-	data->mlx.img = mlx_new_image(data->mlx.mlx, WITH, HEIGHT);
-	data->mlx.data = mlx_get_data_addr(data->mlx.img, &data->mlx.bpp,
-			&data->mlx.line_len, &data->mlx.endian);
-	draw_landscape(&data->mlx, data->map, &data->sizetab);
-	mlx_put_image_to_window(data->mlx.mlx, data->mlx.win, data->mlx.img, 0, 0);
-}
-
-int	handle_key(int keycode, void *param)
+static int	handle_key(int keycode, void *param)
 {
 	t_data	*data;
 
@@ -211,15 +96,6 @@ int	handle_key(int keycode, void *param)
 		translate(keycode, data);
 	else if (keycode == KEY_W || keycode == KEY_S)
 		rotate(keycode, data);
-	return (0);
-}
-
-int	handle_expose(void *param)
-{
-	t_data	*d;
-
-	d = (t_data *)param;
-	mlx_put_image_to_window(d->mlx.mlx, d->mlx.win, d->mlx.img, 0, 0);
 	return (0);
 }
 

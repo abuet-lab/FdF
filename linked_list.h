@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   linked_list.h                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: antoinebuet <antoinebuet@student.42.fr>    +#+  +:+       +#+        */
+/*   By: abuet <abuet@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/09 10:37:17 by antoinebuet       #+#    #+#             */
-/*   Updated: 2026/04/09 12:59:17 by antoinebuet      ###   ########.fr       */
+/*   Updated: 2026/04/09 13:27:53 by abuet            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,6 @@
 
 #include "fdf.h"
 
-void	add_back(t_node **head, char *value);
 int		lenght_list(t_node *head);
 char 	*get_first(t_node *head);
 void	delete_first(t_node **head);
