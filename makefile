@@ -6,14 +6,14 @@
 #    By: antoinebuet <antoinebuet@student.42.fr>    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2026/01/16 21:53:05 by antoinebuet       #+#    #+#              #
-#    Updated: 2026/04/08 12:56:25 by antoinebuet      ###   ########.fr        #
+#    Updated: 2026/04/08 22:40:34 by antoinebuet      ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 NAME    = fdf
 CFLAGS  = -Wall -Wextra -Werror -g
 CC      = cc
-ARGS ?= test_maps/elem.fdf
+ARGS ?= test_maps/test.fdf
 LIBFT_DIR	= ./libft
 LIBFT		= $(LIBFT_DIR)/libft.a
 ################################################################################

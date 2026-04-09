@@ -6,37 +6,35 @@
 /*   By: antoinebuet <antoinebuet@student.42.fr>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/09 16:10:21 by antoinebuet       #+#    #+#             */
-/*   Updated: 2026/04/08 11:46:33 by antoinebuet      ###   ########.fr       */
+/*   Updated: 2026/04/09 10:29:33 by antoinebuet      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "fdf.h"
 
-static int verif_name(char *file_name)
+static int	verif_name(char *file_name)
 {
-	int i;
+	int	i;
 
 	i = 0;
 	while (file_name[i])
-	{
 		i++;
-	}
 	if (file_name[i - 4] == '.' && file_name[i - 3] == 'f' && 
 		file_name[i - 2] == 'd' && file_name[i - 1] == 'f')
 		return (1);
 	return (0);
 }
 
-int count_number(char **first_split)
+int	count_number(char **first_split)
 {
-	int i;
+	int	i;
 
 	i = 0;
-	while(first_split[i])
+	while (first_split[i])
 		i++;
 	return (i);
 }
-int put_int(char ascii)
+int	put_int(char ascii)
 {
 	if (ascii >= '0' && ascii <= '9')
 		return (ascii - 48);
@@ -46,11 +44,11 @@ int put_int(char ascii)
 		return (ascii - 65 + 10);
 	return (-1);
 }
-int put_hex(char *hexa)
+int	put_hex(char *hexa)
 {
-    int i;
-    int number;
-    int temp;
+    int	i;
+    int	number;
+    int	temp;
 
     if (!hexa || hexa[0] != '0' || hexa[1] != 'x')
         return (-1);
@@ -66,29 +64,23 @@ int put_hex(char *hexa)
     }
     return (number);
 }
-// void free_mft(long int **final_tab)
-// {
-// 	if (!final_tab)
-// 		return ;
-// 	free(final_tab[0]);
-// 	free(final_tab);
-// }
-long int **malloc_final_tab(char **first_split, t_sizetab *sizetab)
+
+long int	**malloc_final_tab(char **first_split, t_sizetab *sizetab)
 {
-	long int **final_tab;
-	long int *temp;
-	int i;
-	int number_line;
+	long int	**final_tab;
+	long int	*temp;
+	int			i;
+	int			number_line;
 
 	i = 0;
 	number_line = count_number(first_split);
 	sizetab->colone = number_line;
 	final_tab = malloc(number_line * sizeof(long int *));
 	if (!final_tab)
-		return (0); 
+		return (0);
 	temp = malloc(2 * number_line * sizeof(long int));
 	if (!temp)
-		return (free(final_tab), NULL); //free final_tab
+		return (free(final_tab), NULL);//free final_tab
 	while (i < number_line)
 	{
 		final_tab[i] = &temp[i * 2];
@@ -97,28 +89,28 @@ long int **malloc_final_tab(char **first_split, t_sizetab *sizetab)
 	return (final_tab);
 }
 
-void free_final_tab(long int **final_tab)
+void	free_final_tab(long int **final_tab)
 {
 	if (!final_tab)
 		return ;
 	free(final_tab[0]);
 	free(final_tab);
 }
-int make_color(char **seconde_split)
+int	make_color(char **seconde_split)
 {
-	int hexa;
+	int	hexa;
 
 	if (!seconde_split[1])
 		return (put_hex("0xFFFFFF"));
 	hexa = put_hex(seconde_split[1]);
 	if (hexa == -1)
-		return(-1);
+		return (-1);
 	return (hexa); //attention j'ai pascheck de put exa
 }
 
 static void	free_tab22(char **array)
 {
-	int i;
+	int	i;
 
 	i = 0;
 	while (array[i])
@@ -128,11 +120,11 @@ static void	free_tab22(char **array)
 	}
 	free(array);
 }
-long int **seconde_split(char **first_split, t_sizetab *sizetab)
+long int	**seconde_split(char **first_split, t_sizetab *sizetab)
 {
-	char **seconde_split;
-	long int **final_tab;
-	int i;
+	char		**seconde_split;
+	long int	**final_tab;
+	int			i;
 
 	i = 0;
 	final_tab = malloc_final_tab(first_split, sizetab);
@@ -156,14 +148,14 @@ long int **seconde_split(char **first_split, t_sizetab *sizetab)
 	}
 	return (final_tab);
 }
-int verif_line(char **first_split, t_firstsplit *t)
+int	verif_line(char **first_split, t_firstsplit *t)
 {
-	int i;
+	int	i;
 
 	i = 0;
 	if (t->line == -1)
 	{
-		while(first_split[i])
+		while (first_split[i])
 			i++;
 		t->line = i;
 		return (i);
@@ -174,9 +166,9 @@ int verif_line(char **first_split, t_firstsplit *t)
 		return (0);
 	return (1);
 }
-void free_tab33(long int ***final_tab, t_firstsplit *t)
+void	free_tab33(long int ***final_tab, t_firstsplit *t)
 {
-	int j;
+	int	j;
 
 	j = 0;
 	while (j < (t->i))
@@ -187,11 +179,11 @@ void free_tab33(long int ***final_tab, t_firstsplit *t)
 	}
 	free(final_tab);
 }
-long int ***first_split(t_node *list, int size, t_sizetab *sizetab)
+long int	***first_split(t_node *list, int size, t_sizetab *sizetab)
 {
-	char **first_split;
-	long int ***final_tab;
-	t_firstsplit t;
+	char			**first_split;
+	long int		***final_tab;
+	t_firstsplit	t;
 
 	t.i = 0;
 	t.line = -1;
@@ -214,18 +206,18 @@ long int ***first_split(t_node *list, int size, t_sizetab *sizetab)
 	}
 	return (final_tab);
 }
-void free_list(t_node **list)
+void	free_list(t_node **list)
 {
 	while (*list)
 		delete_first(list);
 }
 
-long int ***open_files(int fd, t_sizetab *sizetab)
+long int	***open_files(int fd, t_sizetab *sizetab)
 {
-	t_node *list;
-	int size;
-	char *line;
-	long int ***tab_parse;
+	t_node		*list;
+	int			size;
+	char		*line;
+	long int	***tab_parse;
 
 	list = NULL;
 	line = get_next_line(fd);
@@ -247,11 +239,11 @@ long int ***open_files(int fd, t_sizetab *sizetab)
 	return (tab_parse);
 }
 
-int find_max(long ***tab_parse, t_sizetab *sizetab)
+int	find_max(long ***tab_parse, t_sizetab *sizetab)
 {
-	int i;
-	int j;
-	int max;
+	int	i;
+	int	j;
+	int	max;
 
 	i = 0;
 	max = tab_parse[0][0][0];
@@ -269,11 +261,11 @@ int find_max(long ***tab_parse, t_sizetab *sizetab)
 	return (max);
 }
 
-int find_min(long ***tab_parse, t_sizetab *sizetab)
+int	find_min(long ***tab_parse, t_sizetab *sizetab)
 {
-	int i;
-	int j;
-	int min;
+	int	i;
+	int	j;
+	int	min;
 
 	i = 0;
 	min = tab_parse[0][0][0];
@@ -290,10 +282,10 @@ int find_min(long ***tab_parse, t_sizetab *sizetab)
 	}
 	return (min);
 }
-long int ***parse_map(char *file_name, t_sizetab *sizetab)
+long int	***parse_map(char *file_name, t_sizetab *sizetab)
 {
-	int fd;
-	long int ***tab_parse;
+	int			fd;
+	long int	***tab_parse;
 
 	if (verif_name(file_name) != 1)
 		return (NULL);

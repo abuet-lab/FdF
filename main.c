@@ -6,7 +6,7 @@
 /*   By: antoinebuet <antoinebuet@student.42.fr>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/24 13:42:31 by antoinebuet       #+#    #+#             */
-/*   Updated: 2026/04/08 22:37:56 by antoinebuet      ###   ########.fr       */
+/*   Updated: 2026/04/09 10:27:13 by antoinebuet      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,9 +20,9 @@ static void	put_pixel_bgra(t_mlx *mlx, int x, int y, unsigned int color_bgra)
 	*(unsigned int *)(mlx->data + y * mlx->line_len + x * 4) = color_bgra;
 }
 
-void draw_line(t_mlx *mlx, int x1, int y1, int x2, int y2, unsigned int color)
+void	draw_line(t_mlx *mlx, int x1, int y1, int x2, int y2, unsigned int col)
 {
-	t_drawline t;
+	t_drawline	t;
 
     t.delta_x = (float)(x2 - x1);
     t.delta_y = (float)(y2 - y1);
@@ -32,7 +32,7 @@ void draw_line(t_mlx *mlx, int x1, int y1, int x2, int y2, unsigned int color)
         t.steps = fabs(t.delta_y);
     if (t.steps == 0)
     {
-        put_pixel_bgra(mlx, x1, y1, color);
+        put_pixel_bgra(mlx, x1, y1, col);
         return ;
     }
     t.inc_x = t.delta_x / t.steps;
@@ -42,16 +42,16 @@ void draw_line(t_mlx *mlx, int x1, int y1, int x2, int y2, unsigned int color)
     t.i = 0;
     while (t.i <= (int)t.steps)
     {
-        put_pixel_bgra(mlx, (int)roundf(t.x), (int)roundf(t.y), color);
+        put_pixel_bgra(mlx, (int)roundf(t.x), (int)roundf(t.y), col);
         t.x += t.inc_x;
         t.y += t.inc_y;
         t.i++;
     }
 }
 
-static t_point translate_iso(t_point t, t_sizetab *a)
+static	t_point translate_iso(t_point t, t_sizetab *a)
 {
-	t_point point;
+	t_point	point;
 
 	point.x = (t.y - t.x) * cos(a->angle * M_PI / 180.0) + 
 		(((a->colone + a->line) * a->size_square * 0.866) / 2) + a->x;
@@ -60,9 +60,9 @@ static t_point translate_iso(t_point t, t_sizetab *a)
 	return (point);
 }
 
-t_point dynamic_size(int x, int y, long ***map, t_sizetab *sizetab)
+t_point	dynamic_size(int x, int y, long ***map, t_sizetab *sizetab)
 {
-	t_point point;
+	t_point	point;
 
 	point.color = map[x][y][1];
 	if (sizetab->size_square == 0)
@@ -82,7 +82,8 @@ t_point dynamic_size(int x, int y, long ***map, t_sizetab *sizetab)
 		point.z = map[x][y][0] * (150 / (sizetab->max_z - sizetab->min_z));
 	return (point);
 }
-void upgrade_square(t_square *square, int up_x, int up_y)
+
+void	upgrade_square(t_square *square, int up_x, int up_y)
 {
 
 	square->s1.x += up_x;
@@ -95,18 +96,19 @@ void upgrade_square(t_square *square, int up_x, int up_y)
 	square->s4.y += up_y;
 }
 
-void draw_square(t_mlx *mlx, t_square *s)
+void	draw_square(t_mlx *mlx, t_square *s)
 {
 	draw_line(mlx, s->s1.x, s->s1.y, s->s2.x, s->s2.y, s->s1.color);
 	draw_line(mlx, s->s2.x, s->s2.y, s->s4.x, s->s4.y, s->s2.color);
 	draw_line(mlx, s->s3.x, s->s3.y, s->s4.x, s->s4.y, s->s4.color);
 	draw_line(mlx, s->s1.x, s->s1.y, s->s3.x, s->s3.y, s->s1.color);
 }
-void draw_landscape(t_mlx *mlx, long ***map, t_sizetab *sizetab)
+
+void	draw_landscape(t_mlx *mlx, long ***map, t_sizetab *sizetab)
 {
-	int x;
-	int y;
-	t_square square;
+	int			x;
+	int			y;
+	t_square	square;
 	
 	x = 0;
 	while (x < sizetab->line - 1)
@@ -129,10 +131,10 @@ void draw_landscape(t_mlx *mlx, long ***map, t_sizetab *sizetab)
 	}
 }
 
-int handle_close(void *param)
+int	handle_close(void *param)
 {
-	t_data *d;
-	int i;
+	t_data	*d;
+	int		i;
 
 	d = (t_data *)param;
 	i = 0;
@@ -147,11 +149,12 @@ int handle_close(void *param)
 	free(d->map);
 	exit(0);
 }
-void zoom(int keycode, t_data *data)
+
+void	zoom(int keycode, t_data *data)
 {
-	if (keycode == KEY_UP) //zoom in
+	if (keycode == KEY_UP)
 		data->sizetab.size_square += 1;
-	if (keycode == KEY_DOWN) //zoom out
+	if (keycode == KEY_DOWN)
 		data->sizetab.size_square -= 1;
 	mlx_destroy_image(data->mlx.mlx, data->mlx.img);
 	data->mlx.img = mlx_new_image(data->mlx.mlx, WITH, HEIGHT);
@@ -161,7 +164,7 @@ void zoom(int keycode, t_data *data)
 	mlx_put_image_to_window(data->mlx.mlx, data->mlx.win, data->mlx.img, 0, 0);
 }
 
-void translate(int keycode, t_data *data)
+void	translate(int keycode, t_data *data)
 {
 	mlx_clear_window(data->mlx.mlx, data->mlx.win);
 	if (keycode == KEY_RIGHT)
@@ -177,7 +180,7 @@ void translate(int keycode, t_data *data)
 	
 }
 
-void rotate(int keycode, t_data *data)
+void	rotate(int keycode, t_data *data)
 {
 	if (keycode == KEY_W)
 		data->sizetab.angle += 1;
@@ -190,9 +193,9 @@ void rotate(int keycode, t_data *data)
 	draw_landscape(&data->mlx, data->map, &data->sizetab);
 	mlx_put_image_to_window(data->mlx.mlx, data->mlx.win, data->mlx.img, 0 ,0);
 }
-int handle_key(int keycode, void *param)
+int	handle_key(int keycode, void *param)
 {
-	t_data *data;
+	t_data	*data;
 
 	data = (t_data *) param;
 	if (keycode == KEY_ESC)
@@ -206,7 +209,7 @@ int handle_key(int keycode, void *param)
     return (0);
 }
 
-int handle_expose(void *param)
+int	handle_expose(void *param)
 {
     t_data *d;
 
@@ -215,9 +218,9 @@ int handle_expose(void *param)
     return (0);
 }
 
-int main(int argc, char **argv)
+int	main(int argc, char **argv)
 {
-	t_data d;
+	t_data	d;
 
 	d.sizetab.size_square = 0;
 	d.sizetab.x = 0;
