@@ -6,7 +6,7 @@
 /*   By: antoinebuet <antoinebuet@student.42.fr>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/09 10:37:03 by antoinebuet       #+#    #+#             */
-/*   Updated: 2026/04/09 10:37:07 by antoinebuet      ###   ########.fr       */
+/*   Updated: 2026/04/09 12:55:20 by antoinebuet      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,6 @@
 # include "keys.h"
 # include "libft/get_next_line/get_next_line.h"
 # include "libft/libft.h"
-# include "libft/ft_printf/ft_printf.h"
 # include "struct.h"
 # include "linked_list.h"
 # include <math.h>
