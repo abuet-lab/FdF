@@ -6,7 +6,7 @@
 /*   By: antoinebuet <antoinebuet@student.42.fr>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/09 16:10:21 by antoinebuet       #+#    #+#             */
-/*   Updated: 2026/04/09 10:29:33 by antoinebuet      ###   ########.fr       */
+/*   Updated: 2026/04/09 10:34:52 by antoinebuet      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,8 +19,8 @@ static int	verif_name(char *file_name)
 	i = 0;
 	while (file_name[i])
 		i++;
-	if (file_name[i - 4] == '.' && file_name[i - 3] == 'f' && 
-		file_name[i - 2] == 'd' && file_name[i - 1] == 'f')
+	if (file_name[i - 4] == '.' && file_name[i - 3] == 'f'
+		&& file_name[i - 2] == 'd' && file_name[i - 1] == 'f')
 		return (1);
 	return (0);
 }
@@ -34,35 +34,37 @@ int	count_number(char **first_split)
 		i++;
 	return (i);
 }
+
 int	put_int(char ascii)
 {
 	if (ascii >= '0' && ascii <= '9')
 		return (ascii - 48);
 	else if (ascii >= 'a' && ascii <= 'z')
-		return (ascii - 97 + 10); 
+		return (ascii - 97 + 10);
 	else if (ascii >= 'A' && ascii <= 'Z')
 		return (ascii - 65 + 10);
 	return (-1);
 }
+
 int	put_hex(char *hexa)
 {
-    int	i;
-    int	number;
-    int	temp;
+	int	i;
+	int	number;
+	int	temp;
 
-    if (!hexa || hexa[0] != '0' || hexa[1] != 'x')
-        return (-1);
-    i = 2;
-    number = 0;
-    while (hexa[i])
-    {
-        temp = put_int(hexa[i]);
-        if (temp == -1)
-            return (-1);
-        number = number * 16 + temp;
-        i++;
-    }
-    return (number);
+	if (!hexa || hexa[0] != '0' || hexa[1] != 'x')
+		return (-1);
+	i = 2;
+	number = 0;
+	while (hexa[i])
+	{
+		temp = put_int(hexa[i]);
+		if (temp == -1)
+			return (-1);
+		number = number * 16 + temp;
+		i++;
+	}
+	return (number);
 }
 
 long int	**malloc_final_tab(char **first_split, t_sizetab *sizetab)
@@ -80,12 +82,12 @@ long int	**malloc_final_tab(char **first_split, t_sizetab *sizetab)
 		return (0);
 	temp = malloc(2 * number_line * sizeof(long int));
 	if (!temp)
-		return (free(final_tab), NULL);//free final_tab
+		return (free(final_tab), NULL);
 	while (i < number_line)
 	{
 		final_tab[i] = &temp[i * 2];
 		i++;
-	}	
+	}
 	return (final_tab);
 }
 
@@ -96,6 +98,7 @@ void	free_final_tab(long int **final_tab)
 	free(final_tab[0]);
 	free(final_tab);
 }
+
 int	make_color(char **seconde_split)
 {
 	int	hexa;
@@ -105,7 +108,7 @@ int	make_color(char **seconde_split)
 	hexa = put_hex(seconde_split[1]);
 	if (hexa == -1)
 		return (-1);
-	return (hexa); //attention j'ai pascheck de put exa
+	return (hexa);
 }
 
 static void	free_tab22(char **array)
@@ -120,6 +123,7 @@ static void	free_tab22(char **array)
 	}
 	free(array);
 }
+
 long int	**seconde_split(char **first_split, t_sizetab *sizetab)
 {
 	char		**seconde_split;
@@ -134,20 +138,21 @@ long int	**seconde_split(char **first_split, t_sizetab *sizetab)
 	{
 		seconde_split = ft_split(first_split[i], ',');
 		if (!seconde_split)
-			return (free_final_tab(final_tab), NULL); // final_tab*
+			return (free_final_tab(final_tab), NULL);
 		final_tab[i][0] = ft_atoi(seconde_split[0]);
 		if (final_tab[i][0] > 2147483647 || final_tab[i][0] < -2147483648)
 			return (free_final_tab(final_tab),
-				free_tab22(seconde_split), NULL); // free seconde split, final_tab*
+				free_tab22(seconde_split), NULL);
 		final_tab[i][1] = make_color(seconde_split);
 		if (final_tab[i][1] == -1)
 			return (free_final_tab(final_tab),
-				free_tab22(seconde_split), NULL); //free seconde split, final_tab*
+				free_tab22(seconde_split), NULL);
 		i++;
-		free_tab22(seconde_split); //seconde split*
+		free_tab22(seconde_split);
 	}
 	return (final_tab);
 }
+
 int	verif_line(char **first_split, t_firstsplit *t)
 {
 	int	i;
@@ -166,6 +171,7 @@ int	verif_line(char **first_split, t_firstsplit *t)
 		return (0);
 	return (1);
 }
+
 void	free_tab33(long int ***final_tab, t_firstsplit *t)
 {
 	int	j;
@@ -179,6 +185,7 @@ void	free_tab33(long int ***final_tab, t_firstsplit *t)
 	}
 	free(final_tab);
 }
+
 long int	***first_split(t_node *list, int size, t_sizetab *sizetab)
 {
 	char			**first_split;
@@ -194,18 +201,19 @@ long int	***first_split(t_node *list, int size, t_sizetab *sizetab)
 	{
 		first_split = ft_split(list->value, ' ');
 		if (!first_split)
-			return (free(final_tab), NULL); //final_tab*
-		if (verif_line(first_split, &t) == 0) //marche pas
+			return (free(final_tab), NULL);
+		if (verif_line(first_split, &t) == 0)
 			return (free_tab33(final_tab, &t), free_tab22(first_split), NULL);
 		final_tab[t.i] = seconde_split(first_split, sizetab);
 		if (!final_tab[t.i])
-			return (free_tab33(final_tab, &t), free_tab22(first_split), NULL); //final_tab premier tableau first_split*
+			return (free_tab33(final_tab, &t), free_tab22(first_split), NULL);
 		t.i++;
 		free_tab22(first_split);
 		list = list->next;
 	}
 	return (final_tab);
 }
+
 void	free_list(t_node **list)
 {
 	while (*list)
@@ -231,11 +239,11 @@ long int	***open_files(int fd, t_sizetab *sizetab)
 	size = lenght_list(list);
 	sizetab->line = size;
 	if (size < 2)
-		return (free_list(&list), NULL); //free list chainé*
+		return (free_list(&list), NULL);
 	tab_parse = first_split(list, size, sizetab);
 	free_list(&list);
 	if (!tab_parse)
-		return (NULL); //free list chainé*
+		return (NULL);
 	return (tab_parse);
 }
 
@@ -282,6 +290,7 @@ int	find_min(long ***tab_parse, t_sizetab *sizetab)
 	}
 	return (min);
 }
+
 long int	***parse_map(char *file_name, t_sizetab *sizetab)
 {
 	int			fd;
