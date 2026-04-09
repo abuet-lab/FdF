@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   parse.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: abuet <abuet@student.42.fr>                +#+  +:+       +#+        */
+/*   By: antoinebuet <antoinebuet@student.42.fr>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/09 16:10:21 by antoinebuet       #+#    #+#             */
-/*   Updated: 2026/04/09 13:39:22 by abuet            ###   ########.fr       */
+/*   Updated: 2026/04/09 23:15:41 by antoinebuet      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -120,8 +120,9 @@ long int	***parse_map(char *file_name, t_sizetab *sizetab)
 		return (NULL);
 	tab_parse = open_files(fd, sizetab);
 	if (!tab_parse)
-		return (NULL);
+		return (close(fd), NULL);
 	sizetab->max_z = find_max(tab_parse, sizetab);
 	sizetab->min_z = find_min(tab_parse, sizetab);
+	close(fd);
 	return (tab_parse);
 }

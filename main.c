@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: abuet <abuet@student.42.fr>                +#+  +:+       +#+        */
+/*   By: antoinebuet <antoinebuet@student.42.fr>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/24 13:42:31 by antoinebuet       #+#    #+#             */
-/*   Updated: 2026/04/09 14:31:56 by abuet            ###   ########.fr       */
+/*   Updated: 2026/04/09 23:18:24 by antoinebuet      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -119,7 +119,7 @@ int	main(int argc, char **argv)
 			&d.mlx.endian);
 	draw_landscape(&d.mlx, d.map, &d.sizetab);
 	mlx_put_image_to_window(d.mlx.mlx, d.mlx.win, d.mlx.img, 0, 0);
-	mlx_do_key_autorepeatoff(d.mlx.mlx);
+	mlx_do_key_autorepeaton(d.mlx.mlx);
 	mlx_key_hook(d.mlx.win, handle_key, &d);
 	mlx_hook(d.mlx.win, 17, 0, handle_close, &d);
 	mlx_hook(d.mlx.win, 12, 1L << 15, handle_expose, &d);

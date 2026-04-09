@@ -6,7 +6,7 @@
 /*   By: antoinebuet <antoinebuet@student.42.fr>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/09 14:14:04 by abuet             #+#    #+#             */
-/*   Updated: 2026/04/09 14:45:05 by antoinebuet      ###   ########.fr       */
+/*   Updated: 2026/04/09 23:19:14 by antoinebuet      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,7 @@ int	handle_close(void *param)
 	i = 0;
 	mlx_destroy_image(d->mlx.mlx, d->mlx.img);
 	mlx_destroy_window(d->mlx.mlx, d->mlx.win);
-	mlx_destroy_display(d->mlx.mlx);
+	//mlx_destroy_display(d->mlx.mlx); linux uniquely
 	free(d->mlx.mlx);
 	while (i < d->sizetab.line)
 	{
