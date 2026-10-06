@@ -1,92 +1,138 @@
 *This project has been created as part of the 42 curriculum by abuet.*
 
-# FdF — Fil de Fer
+# FdF — Wireframe 3D renderer
 
-## Description
+![Language](https://img.shields.io/badge/language-C-blue)
+![School](https://img.shields.io/badge/school-42-black)
+![Graphics](https://img.shields.io/badge/graphics-MiniLibX-lightgrey)
 
-FdF (Fil de Fer) est un projet du cursus 42 qui consiste à représenter un relief en 3D à partir d'une carte de points en utilisant une projection isométrique. Chaque point de la carte possède une coordonnée Z (altitude) et une couleur optionnelle. Le programme relie ces points par des segments de droites pour former un rendu "fil de fer" (wireframe).
+A C program that reads a height map and renders it as a **3D wireframe landscape** using an isometric projection. Each point of the map has an altitude (Z) and an optional color, and the program connects the points with line segments to draw the relief. The view can be zoomed, moved and rotated in real time.
 
-L'objectif est de se familiariser avec la gestion graphique bas niveau via la MiniLibX, les algorithmes de rendu (DDA), les projections 3D et la gestion des événements clavier/fenêtre.
+> Project from the [42 school](https://42.fr/) curriculum ("FdF" stands for *fil de fer*, French for "wireframe"). Written in C with the MiniLibX graphics library, following the 42 coding standard (the *Norm*).
 
 ---
 
-## Instructions
+<!-- Add a screenshot of your program here, for example:
+![FdF preview](docs/preview.png)
+-->
 
-### Compilation
+## Features
 
-```bash
-make
+- Isometric projection with an adjustable angle
+- Zoom and translation of the map
+- Rotation (tilt) of the view
+- Per-point colors defined in the map file
+- Automatic scaling to the size of the map
+- Clean exit: all memory is freed and MiniLibX resources are destroyed
+- Works on both macOS and Linux
 
-make re
+## Map format
 
-make clean
+Each line of a `.fdf` file is a row of points. Each value is an integer altitude, optionally followed by a hexadecimal color separated by a comma:
 
-make fclean
-```
-
-### Exécution
-
-```bash
-./fdf <chemin_vers_carte.fdf>
-```
-
-**Exemple :**
-```bash
-./fdf test_maps/42.fdf
-./fdf test_maps/elem.fdf
-```
-
-### Format de la carte `.fdf`
-
-Chaque ligne de la carte représente une rangée de points. Chaque point est une valeur entière (l'altitude Z), avec une couleur optionnelle en hexadécimal séparée par une virgule :
-
-```
+```text
 0 0 0 0
 0,0xFF0000 5,0x00FF00 0
 0 0 0 0
 ```
 
----
+The position of a value in the file gives its `x` and `y` coordinates, and the value itself gives its altitude `z`.
 
-## Contrôles
+## How it works
 
-| Touche | Action |
-|--------|--------|
-| `↑` / `↓` | Zoom avant / arrière |
-| `←` / `→` | Translation horizontale |
-| `W` / `S` | Rotation (inclinaison) |
-| `ESC` | Quitter proprement |
-| Croix rouge | Fermer la fenêtre |
+1. **Parsing**: the file is read line by line and stored in a linked list, then converted into a grid of points with their altitude and color. The map is validated (consistent line lengths, valid values).
+2. **Scaling**: the altitude range and the map size are computed so the model fits inside the window.
+3. **Projection**: each 3D point `(x, y, z)` is rotated and projected onto the 2D screen with an **isometric projection**.
+4. **Drawing**: neighboring points are connected using the **DDA line algorithm**, which steps along the dominant axis to avoid gaps in the lines. Pixels are written into an image buffer that is then displayed.
+5. **Events**: keyboard hooks update the zoom, position and rotation, and the image is redrawn.
 
----
+## Project structure
 
-## Fonctionnalités
+```text
+.
+├── main.c            # Entry point
+├── parse.c           # Reads and validates the .fdf map
+├── free_parse.c      # Frees memory used during parsing
+├── linked_list.c/.h  # Linked list used to store map lines while reading
+├── min_max.c         # Computes altitude range and scaling
+├── utils_draw.c      # Projection and line drawing (DDA)
+├── manage_window.c   # Window creation, key and close events
+├── utils.c           # Helper functions
+├── fdf.h             # Main header
+├── struct.h          # Data structures (points, map, window…)
+├── keys.h            # Keyboard codes
+├── libft/            # My own C library
+├── minilibx-linux/   # MiniLibX for Linux
+├── minilibx_macos/   # MiniLibX for macOS
+└── test_maps/        # Sample maps
+```
 
-- Projection isométrique configurable (angle modifiable)
-- Zoom et translation de la carte
-- Rotation de la vue
-- Gestion des couleurs par point
-- Adaptation dynamique à la taille de la carte
-- Fermeture propre (libération mémoire, destruction des ressources MiniLibX)
-- Compatible macOS et Linux
+## Build
 
----
+### Prerequisites
+
+On Linux, MiniLibX needs the X11 development libraries:
+
+```bash
+sudo apt-get install gcc make xorg libxext-dev libbsd-dev
+```
+
+### Compile
+
+`minilibx-linux` is a Git submodule, so clone with `--recurse-submodules`:
+
+```bash
+git clone --recurse-submodules https://github.com/abuet-lab/FdF.git
+cd FdF
+make
+```
+
+| Rule          | Description |
+|---------------|-------------|
+| `make`        | Compiles libft, MiniLibX and the `fdf` executable |
+| `make clean`  | Removes object files |
+| `make fclean` | Removes object files and the executable |
+| `make re`     | Rebuilds everything from scratch |
+
+## Usage
+
+```bash
+./fdf <path_to_map.fdf>
+
+./fdf test_maps/42.fdf
+./fdf test_maps/elem.fdf
+```
+
+### Controls
+
+| Key           | Action |
+|---------------|--------|
+| `↑` / `↓`     | Zoom in / out |
+| `←` / `→`     | Move horizontally |
+| `W` / `S`     | Rotate (tilt) the view |
+| `ESC`         | Quit cleanly |
+| Close button  | Close the window |
+
+## What I learned
+
+- Basics of **computer graphics**: rotating and projecting 3D coordinates onto a 2D screen
+- Drawing lines pixel by pixel with the **DDA algorithm**
+- Using a low-level graphics library (**MiniLibX**) and an image buffer
+- **Event-driven programming**: keyboard and window events with hooks
+- Parsing and validating input files robustly
+- Managing memory across a larger C project split into several modules
 
 ## Resources
 
-### Documentation officielle
-- [MiniLibX Documentation (42)](https://harm-smits.github.io/42docs/libs/minilibx)
-- [Algorithme DDA — Wikipedia](https://fr.wikipedia.org/wiki/Algorithme_de_trac%C3%A9_de_segment_de_droite_de_Bresenham)
-- [Projection isométrique — Wikipedia](https://fr.wikipedia.org/wiki/Perspective_isom%C3%A9trique)
+- [MiniLibX documentation](https://harm-smits.github.io/42docs/libs/minilibx)
+- [DDA line algorithm — Wikipedia](https://en.wikipedia.org/wiki/Digital_differential_analyzer_(graphics_algorithm))
+- [Isometric projection — Wikipedia](https://en.wikipedia.org/wiki/Isometric_projection)
+- [MiniLibX for Linux](https://github.com/42Paris/minilibx-linux)
 
-### Références utiles
-- [Guide MiniLibX Linux](https://github.com/42Paris/minilibx-linux)
-- [Guide MiniLibX macOS](https://github.com/42Paris/minilibx_mms_v1)
+### Use of AI
 
-### Utilisation de l'IA
+AI was used as a development aid for the following points:
 
-L'IA a été utilisée comme outil d'aide au développement sur les points suivants :
-
-- **Débogage** : identification de bugs (double définition de struct, mauvaise signature de callbacks MiniLibX, division entière produisant `size_square = 0`)
-- **Algorithme DDA** : explication et correction de l'algorithme pour itérer sur l'axe dominant et éviter les trous dans les lignes
-- **Projection isométrique** : formules de rotation et de translation
+- **Debugging**: finding bugs such as a duplicated struct definition, wrong MiniLibX callback signatures, and an integer division that resulted in `size_square = 0`
+- **DDA algorithm**: explanation and correction of the algorithm so that it iterates over the dominant axis and avoids gaps in the lines
+- **Isometric projection**: rotation and translation formulas
